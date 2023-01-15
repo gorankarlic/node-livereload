@@ -8,6 +8,7 @@ chokidar = require 'chokidar'
 EventEmitter = require('events')
 
 protocol_version = '7'
+defaultHost = 'localhost'
 defaultPort = 35729
 
 defaultExts = [
@@ -36,6 +37,7 @@ class Server extends EventEmitter
     @config ?= {}
 
     @config.version ?= protocol_version
+    @config.host    ?= defaultHost
     @config.port    ?= defaultPort
 
     @config.exts       ?= []
@@ -69,10 +71,10 @@ class Server extends EventEmitter
     """
 
     if @config.server
-      @config.server.listen @config.port
+      @config.server.listen @config.port, @config.host
       @server = new ws.Server({server: @config.server})
     else
-      @server = new ws.Server({port: @config.port})
+      @server = new ws.Server({host: @config.host, port: @config.port})
 
     @server.on 'connection', @onConnection.bind @
     @server.on 'close',      @onClose.bind @
